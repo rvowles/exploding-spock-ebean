@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.example</groupId>
+	<artifactId>exploding-groovy-ebean</artifactId>
+	<version>1.1-SNAPSHOT</version>
+
+	<properties>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.release>11</java.release>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+		<ebean.version>12.10.0</ebean.version>
+		<groovy.version>3.0.8</groovy.version>
+    <log4j.version>2.14.1</log4j.version>
+    <lmax.disruptor>3.4.4</lmax.disruptor>
+
+  </properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>io.ebean</groupId>
+			<artifactId>ebean-datasource</artifactId>
+			<version>7.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.ebean</groupId>
+			<artifactId>ebean-migration</artifactId>
+			<version>12.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.ebean</groupId>
+			<artifactId>ebean</artifactId>
+			<version>${ebean.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.ebean</groupId>
+			<artifactId>ebean-querybean</artifactId>
+			<version>${ebean.version}</version>
+		</dependency>
+		<dependency> <!-- this is a case for it being in the tile -->
+			<groupId>io.ebean</groupId>
+			<artifactId>querybean-generator</artifactId>
+			<version>${ebean.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>[${log4j.version}]</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>[${log4j.version}]</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>[${log4j.version}]</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
+      <version>[${log4j.version}]</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-jul</artifactId>
+      <version>[${log4j.version}]</version>
+    </dependency>
+    <dependency>
+      <groupId>com.lmax</groupId>
+      <artifactId>disruptor</artifactId>
+      <version>[${lmax.disruptor}]</version>
+    </dependency>
+
+		<dependency>
+			<groupId>org.spockframework</groupId>
+			<artifactId>spock-core</artifactId>
+			<version>2.0-groovy-3.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-test</artifactId>
+			<version>${groovy.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.ebean</groupId>
+			<artifactId>ebean-test</artifactId>
+			<version>${ebean.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<release>${java.release}</release>
+				</configuration>
+				<executions>
+					<!-- Replacing default-compile as it is treated specially by maven -->
+					<execution>
+						<id>default-compile</id>
+						<phase>none</phase>
+					</execution>
+					<!-- Replacing default-testCompile as it is treated specially by maven -->
+					<execution>
+						<id>default-testCompile</id>
+						<phase>none</phase>
+					</execution>
+					<execution>
+						<id>java-compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>java-test-compile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M3</version>
+				<configuration>
+					<includes>
+						<include>**/*Test.java</include>
+						<include>**/*Spec.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+
+			<!-- groovy is ONLY used for Spec Testing -->
+			<plugin>
+				<groupId>org.codehaus.gmavenplus</groupId>
+				<artifactId>gmavenplus-plugin</artifactId>
+				<version>1.12.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>addTestSources</goal>
+							<goal>generateTestStubs</goal>
+							<goal>compileTests</goal>
+							<goal>removeTestStubs</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<invokeDynamic>true</invokeDynamic>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>io.repaint.maven</groupId>
+				<artifactId>tiles-maven-plugin</artifactId>
+				<version>2.23</version>
+				<extensions>true</extensions>
+				<configuration>
+					<filtering>false</filtering>
+					<tiles>
+						<tile>org.avaje.tile:java-compile:1.1</tile>
+						<tile>io.ebean.tile:enhancement:${ebean.version}</tile>
+					</tiles>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
